@@ -1,0 +1,186 @@
+     A* ======================================================================
+     A* WRKCATD - Work with Categories (display file for WRKCAT)
+     A* Records: SFL01/CTL01/FKEYS01 list, DETAIL, TEXT01, SFL02/CTL02/FKEYS02 d
+     A* ======================================================================
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A                                      PRINT
+     A                                      CA03(03 'Exit')
+     A                                      CA12(12 'Cancel')
+     A* List subfile
+     A          R SFL01                     SFL
+     A            S1OPT          1A  B  9  3VALUES(' ' '2' '3' '4' '5')
+     A            S1CATID        6Y 0O  9  7
+     A                                      EDTCDE(4)
+     A            S1CATNAME     15A  O  9 15
+     A            S1DESC        48A  O  9 32
+     A            H1CATID        9S 0H
+     A* List control
+     A          R CTL01                     SFLCTL(SFL01)
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      CF05(05 'Refresh')
+     A                                      CF06(06 'Create')
+     A                                      OVERLAY
+     A  31                                  SFLDSP
+     A  32                                  SFLDSPCTL
+     A  33                                  SFLCLR
+     A  34                                  SFLEND(*MORE)
+     A            C1RRN          4S 0H      SFLRCDNBR(CURSOR)
+     A                                  1  2'WRKCAT'
+     A                                  1 30'Work with Categories'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Position to name . . . .'
+     A            C1POS         15A  B  3 27
+     A                                  5  2'Type options, press Enter.'
+     A                                      COLOR(BLU)
+     A                                  6  4'2=Change   3=Copy   4=Delete'
+     A                                      COLOR(BLU)
+     A                                  6 35'5=Display'
+     A                                      COLOR(BLU)
+     A                                  8  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  8  7'ID'
+     A                                      DSPATR(HI)
+     A                                  8 15'Name'
+     A                                      DSPATR(HI)
+     A                                  8 32'Description'
+     A                                      DSPATR(HI)
+     A* List function keys and message line
+     A          R FKEYS01
+     A                                      OVERLAY
+     A                                 23  2'F3=Exit   F5=Refresh   F6=Create'
+     A                                      COLOR(BLU)
+     A                                 23 37'F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MSG1          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Detail panel: create / change / copy / display
+     A          R DETAIL
+     A                                      CF10(10 'Text')
+     A                                  1  2'WRKCAT'
+     A            PTITLE        40A  O  1 21
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A            PINSTR        60A  O  3  2
+     A                                      COLOR(BLU)
+     A                                  5  2'Category ID  . .'
+     A            DCATID         9Y 0O  5 20
+     A                                      EDTCDE(4)
+     A                                  5 31'(assigned by system)'
+     A                                      COLOR(BLU)
+     A                                  6  2'Category name  .'
+     A            DCATNAME      15A  B  6 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  52                                  DSPATR(RI PC)
+     A                                  7  2'Description  . .'
+     A            DDESC         50A  O  7 20
+     A                                  7 72'F10'
+     A                                      COLOR(BLU)
+     A  53                                  DSPATR(RI)
+     A            PKEYS         78A  O 23  2
+     A                                      COLOR(BLU)
+     A            PMSG          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Long text editor (DESCRIPTION)
+     A          R TEXT01
+     A                                  1  2'WRKCAT'
+     A            TTITLE        40A  O  1 21
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A            TKEY          70A  O  3  2
+     A            TX01          76A  B  5  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX02          76A  B  6  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX03          76A  B  7  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX04          76A  B  8  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX05          76A  B  9  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX06          76A  B 10  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX07          76A  B 11  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX08          76A  B 12  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX09          76A  B 13  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX10          76A  B 14  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX11          76A  B 15  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX12          76A  B 16  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TKEYS         78A  O 23  2
+     A                                      COLOR(BLU)
+     A            TMSG          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Confirm delete subfile
+     A          R SFL02                     SFL
+     A            X2OPT          1A  O  8  3
+     A            X2CATID        6Y 0O  8  7
+     A                                      EDTCDE(4)
+     A            X2CATNAME     15A  O  8 15
+     A            X2DESC        48A  O  8 32
+     A          R CTL02                     SFLCTL(SFL02)
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      OVERLAY
+     A  35                                  SFLDSP
+     A  36                                  SFLDSPCTL
+     A  37                                  SFLCLR
+     A  38                                  SFLEND(*MORE)
+     A                                  1  2'WRKCAT'
+     A                                  1 26'Confirm Delete of Categories'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Press Enter to confirm your'
+     A                                      COLOR(BLU)
+     A                                  3 30'choices for 4=Delete.'
+     A                                      COLOR(BLU)
+     A                                  4  2'Press F12=Cancel to return to'
+     A                                      COLOR(BLU)
+     A                                  4 32'change your choices.'
+     A                                      COLOR(BLU)
+     A                                  7  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  7  7'ID'
+     A                                      DSPATR(HI)
+     A                                  7 15'Name'
+     A                                      DSPATR(HI)
+     A                                  7 32'Description'
+     A                                      DSPATR(HI)
+     A          R FKEYS02
+     A                                      OVERLAY
+     A                                 23  2'F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MSG2          78A  O 24  2
+     A                                      DSPATR(HI)

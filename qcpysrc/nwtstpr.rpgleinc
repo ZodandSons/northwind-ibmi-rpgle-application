@@ -1,0 +1,23 @@
+**free
+//==============================================================================
+// NWTSTPR - Prototypes for NWTSTSV (unit-test fixture helper, tests only)
+//==============================================================================
+/if defined(NWTSTPR)
+/eof
+/endif
+/define NWTSTPR
+
+// Run an SQL statement (fixture setup/cleanup). Returns *ON if it worked
+// or affected no rows (SQLCODE 100).
+dcl-pr Tst_exec ind;
+  statement varchar(2048) const;
+end-pr;
+
+// Run "SELECT COUNT(*) FROM ..." and return the count (-1 on error)
+dcl-pr Tst_count int(10);
+  statement varchar(2048) const;
+end-pr;
+
+// SQLSTATE of the last Tst_exec/Tst_count statement (for test diagnostics)
+dcl-pr Tst_lastState char(5);
+end-pr;

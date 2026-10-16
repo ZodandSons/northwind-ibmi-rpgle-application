@@ -1,0 +1,81 @@
+**free
+//==============================================================================
+// NWSUPPR - Prototypes and record template for NWSUPSV
+//          (Northwind table SUPPLIERS)
+//==============================================================================
+/if defined(NWSUPPR)
+/eof
+/endif
+/define NWSUPPR
+
+/copy QCPYSRC,NWCOMMON
+
+// One row of SUPPLIERS. Nullable columns are returned as blanks / zero /
+// NW_NULL_DATE and written back as NULL.
+dcl-ds Supplier_t qualified template;
+  SupplierId   int(10);       // key (identity)
+  CompanyName  varchar(40);
+  ContactName  varchar(30);   // nullable
+  ContactTitle varchar(30);   // nullable
+  Address      varchar(60);   // nullable
+  City         varchar(15);   // nullable
+  Region       varchar(15);   // nullable
+  PostalCode   varchar(10);   // nullable
+  Country      varchar(15);   // nullable
+  Phone        varchar(24);   // nullable
+  Fax          varchar(24);   // nullable
+  HomePage     varchar(1024); // nullable, CLOB
+end-ds;
+
+// Retrieve one supplier by key
+dcl-pr Sup_get ind;
+  pSupplierId like(Supplier_t.SupplierId) const;
+  rec likeds(Supplier_t);
+  err likeds(NwError_t);
+end-pr;
+
+// *ON if the key exists
+dcl-pr Sup_exists ind;
+  pSupplierId like(Supplier_t.SupplierId) const;
+end-pr;
+
+// Validate a record for ACTION_CREATE or ACTION_UPDATE
+dcl-pr Sup_validate ind;
+  rec    likeds(Supplier_t) const;
+  action char(1) const;
+  err    likeds(NwError_t);
+end-pr;
+
+// Validate and insert (identity key returned in rec)
+dcl-pr Sup_create ind;
+  rec likeds(Supplier_t);
+  err likeds(NwError_t);
+end-pr;
+
+// Validate and update all non-key columns
+dcl-pr Sup_update ind;
+  rec likeds(Supplier_t) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Delete by key
+dcl-pr Sup_delete ind;
+  pSupplierId like(Supplier_t.SupplierId) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Open the list cursor positioned at company name
+dcl-pr Sup_openList ind;
+  positionTo like(Supplier_t.CompanyName) const;
+  err        likeds(NwError_t);
+end-pr;
+
+// Fetch next row; *OFF at end of list
+dcl-pr Sup_fetchNext ind;
+  rec likeds(Supplier_t);
+end-pr;
+
+// Close the list cursor
+dcl-pr Sup_closeList;
+end-pr;
+

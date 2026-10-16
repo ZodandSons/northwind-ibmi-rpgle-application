@@ -1,0 +1,260 @@
+     A* ======================================================================
+     A* WRKEMPD - Work with Employees (display file for WRKEMP)
+     A* Records: SFL01/CTL01/FKEYS01 list, DETAIL, TEXT01, SFL02/CTL02/FKEYS02 d
+     A* ======================================================================
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A                                      PRINT
+     A                                      CA03(03 'Exit')
+     A                                      CA12(12 'Cancel')
+     A* List subfile
+     A          R SFL01                     SFL
+     A            S1OPT          1A  B  9  3VALUES(' ' '2' '3' '4' '5')
+     A            S1EMPID        6Y 0O  9  7
+     A                                      EDTCDE(4)
+     A            S1LNAME       20A  O  9 15
+     A            S1FNAME       10A  O  9 37
+     A            S1TITLE       30A  O  9 49
+     A            H1EMPID        9S 0H
+     A* List control
+     A          R CTL01                     SFLCTL(SFL01)
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      CF05(05 'Refresh')
+     A                                      CF06(06 'Create')
+     A                                      OVERLAY
+     A  31                                  SFLDSP
+     A  32                                  SFLDSPCTL
+     A  33                                  SFLCLR
+     A  34                                  SFLEND(*MORE)
+     A            C1RRN          4S 0H      SFLRCDNBR(CURSOR)
+     A                                  1  2'WRKEMP'
+     A                                  1 30'Work with Employees'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Position to last name  .'
+     A            C1POS         20A  B  3 27
+     A                                  5  2'Type options, press Enter.'
+     A                                      COLOR(BLU)
+     A                                  6  4'2=Change   3=Copy   4=Delete'
+     A                                      COLOR(BLU)
+     A                                  6 35'5=Display'
+     A                                      COLOR(BLU)
+     A                                  8  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  8  7'ID'
+     A                                      DSPATR(HI)
+     A                                  8 15'Last name'
+     A                                      DSPATR(HI)
+     A                                  8 37'First name'
+     A                                      DSPATR(HI)
+     A                                  8 49'Title'
+     A                                      DSPATR(HI)
+     A* List function keys and message line
+     A          R FKEYS01
+     A                                      OVERLAY
+     A                                 23  2'F3=Exit   F5=Refresh   F6=Create'
+     A                                      COLOR(BLU)
+     A                                 23 37'F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MSG1          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Detail panel: create / change / copy / display
+     A          R DETAIL
+     A                                      CF10(10 'Text')
+     A                                  1  2'WRKEMP'
+     A            PTITLE        40A  O  1 21
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A            PINSTR        60A  O  3  2
+     A                                      COLOR(BLU)
+     A                                  5  2'Employee ID  . .'
+     A            DEMPID         9Y 0B  5 20
+     A                                      EDTCDE(4)
+     A  41                                  DSPATR(PR)
+     A  51                                  DSPATR(RI PC)
+     A                                  6  2'Last name  . . .'
+     A            DLNAME        20A  B  6 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  52                                  DSPATR(RI PC)
+     A                                  7  2'First name . . .'
+     A            DFNAME        10A  B  7 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  53                                  DSPATR(RI PC)
+     A                                  8  2'Title  . . . . .'
+     A            DTITLE        30A  B  8 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  54                                  DSPATR(RI PC)
+     A                                  9  2'Courtesy title .'
+     A            DCOURT        25A  B  9 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  55                                  DSPATR(RI PC)
+     A                                 10  2'Birth date . . .'
+     A            DBIRTH        10A  B 10 20
+     A  40                                  DSPATR(PR)
+     A  56                                  DSPATR(RI PC)
+     A                                 10 32'YYYY-MM-DD'
+     A                                      COLOR(BLU)
+     A                                 11  2'Hire date  . . .'
+     A            DHIRE         10A  B 11 20
+     A  40                                  DSPATR(PR)
+     A  57                                  DSPATR(RI PC)
+     A                                 11 32'YYYY-MM-DD'
+     A                                      COLOR(BLU)
+     A                                 12  2'Address  . . . .'
+     A            DADDRESS      60A  B 12 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  58                                  DSPATR(RI PC)
+     A                                 13  2'City . . . . . .'
+     A            DCITY         15A  B 13 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  59                                  DSPATR(RI PC)
+     A                                 14  2'Region . . . . .'
+     A            DREGION       15A  B 14 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  60                                  DSPATR(RI PC)
+     A                                 15  2'Postal code  . .'
+     A            DPOSTAL       10A  B 15 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  61                                  DSPATR(RI PC)
+     A                                 16  2'Country  . . . .'
+     A            DCOUNTRY      15A  B 16 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  62                                  DSPATR(RI PC)
+     A                                 17  2'Home phone . . .'
+     A            DPHONE        24A  B 17 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  63                                  DSPATR(RI PC)
+     A                                 18  2'Extension  . . .'
+     A            DEXT           4A  B 18 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  64                                  DSPATR(RI PC)
+     A                                 19  2'Reports to . . .'
+     A            DRPTTO         9Y 0B 19 20
+     A                                      EDTCDE(4)
+     A  40                                  DSPATR(PR)
+     A  65                                  DSPATR(RI PC)
+     A            NRPTTO        40A  O 19 31
+     A                                 20  2'Notes  . . . . .'
+     A            DNOTES        50A  O 20 20
+     A                                 20 72'F10'
+     A                                      COLOR(BLU)
+     A  66                                  DSPATR(RI)
+     A            PKEYS         78A  O 23  2
+     A                                      COLOR(BLU)
+     A            PMSG          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Long text editor (NOTES)
+     A          R TEXT01
+     A                                  1  2'WRKEMP'
+     A            TTITLE        40A  O  1 21
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A            TKEY          70A  O  3  2
+     A            TX01          76A  B  5  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX02          76A  B  6  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX03          76A  B  7  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX04          76A  B  8  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX05          76A  B  9  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX06          76A  B 10  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX07          76A  B 11  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX08          76A  B 12  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX09          76A  B 13  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX10          76A  B 14  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX11          76A  B 15  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TX12          76A  B 16  3
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A            TKEYS         78A  O 23  2
+     A                                      COLOR(BLU)
+     A            TMSG          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Confirm delete subfile
+     A          R SFL02                     SFL
+     A            X2OPT          1A  O  8  3
+     A            X2EMPID        6Y 0O  8  7
+     A                                      EDTCDE(4)
+     A            X2LNAME       20A  O  8 15
+     A            X2FNAME       10A  O  8 37
+     A            X2TITLE       30A  O  8 49
+     A          R CTL02                     SFLCTL(SFL02)
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      OVERLAY
+     A  35                                  SFLDSP
+     A  36                                  SFLDSPCTL
+     A  37                                  SFLCLR
+     A  38                                  SFLEND(*MORE)
+     A                                  1  2'WRKEMP'
+     A                                  1 26'Confirm Delete of Employees'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Press Enter to confirm your'
+     A                                      COLOR(BLU)
+     A                                  3 30'choices for 4=Delete.'
+     A                                      COLOR(BLU)
+     A                                  4  2'Press F12=Cancel to return to'
+     A                                      COLOR(BLU)
+     A                                  4 32'change your choices.'
+     A                                      COLOR(BLU)
+     A                                  7  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  7  7'ID'
+     A                                      DSPATR(HI)
+     A                                  7 15'Last name'
+     A                                      DSPATR(HI)
+     A                                  7 37'First name'
+     A                                      DSPATR(HI)
+     A                                  7 49'Title'
+     A                                      DSPATR(HI)
+     A          R FKEYS02
+     A                                      OVERLAY
+     A                                 23  2'F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MSG2          78A  O 24  2
+     A                                      DSPATR(HI)

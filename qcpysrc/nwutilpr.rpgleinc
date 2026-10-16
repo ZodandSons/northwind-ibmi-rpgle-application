@@ -1,0 +1,67 @@
+**free
+//==============================================================================
+// NWUTILPR - Prototypes for service program NWUTIL (general utilities)
+//==============================================================================
+/if defined(NWUTILPR)
+/eof
+/endif
+/define NWUTILPR
+
+/copy QCPYSRC,NWCOMMON
+
+// Reset an error structure
+dcl-pr NwU_clearError;
+  err likeds(NwError_t);
+end-pr;
+
+// Fill an error structure; always returns *OFF so callers can write
+//   return NwU_setError(err: NWE_REQUIRED: 'CompanyName': 'Company name is required.');
+dcl-pr NwU_setError ind;
+  err   likeds(NwError_t);
+  code  char(7) const;
+  field varchar(30) const;
+  text  varchar(132) const;
+end-pr;
+
+// Translate an SQL failure into a user-friendly error; always returns *OFF
+dcl-pr NwU_sqlError ind;
+  err      likeds(NwError_t);
+  sqlState char(5) const;
+  sqlCode  int(10) const;
+  sqlMsg   varchar(512) const;
+  context  varchar(60) const;
+end-pr;
+
+// *ON when an SQLSTATE means success (00xxx) or a warning (01xxx)
+dcl-pr NwU_sqlOk ind;
+  sqlState char(5) const;
+end-pr;
+
+// Convert screen text to a date. Accepts YYYY-MM-DD, MM/DD/YYYY or YYYYMMDD.
+// Blank text yields NW_NULL_DATE. Returns *OFF if the text is not a date.
+dcl-pr NwU_toDate ind;
+  text   char(10) const;
+  result date;
+end-pr;
+
+// Convert a date to YYYY-MM-DD screen text; NW_NULL_DATE yields blanks
+dcl-pr NwU_fromDate char(10);
+  value date const;
+end-pr;
+
+// Word-wrap text into the 12 x 76 editor lines; returns lines used
+dcl-pr NwU_wrapText int(10);
+  text  varchar(1024) const;
+  lines like(NwTextLine_t) dim(12);
+end-pr;
+
+// Join editor lines back into one string (single blank between lines)
+dcl-pr NwU_joinText varchar(1024);
+  lines like(NwTextLine_t) dim(12) const;
+end-pr;
+
+// Center text within a given width (used for panel titles)
+dcl-pr NwU_center varchar(80);
+  text  varchar(80) const;
+  width int(10) const;
+end-pr;

@@ -1,0 +1,75 @@
+**free
+//==============================================================================
+// NWREGPR - Prototypes and record template for NWREGSV
+//          (Northwind table REGION)
+//==============================================================================
+/if defined(NWREGPR)
+/eof
+/endif
+/define NWREGPR
+
+/copy QCPYSRC,NWCOMMON
+
+// One row of REGION. Nullable columns are returned as blanks / zero /
+// NW_NULL_DATE and written back as NULL.
+dcl-ds Region_t qualified template;
+  RegionId          int(10);       // key
+  RegionDescription char(50);
+end-ds;
+
+// Retrieve one region by key
+dcl-pr Reg_get ind;
+  pRegionId like(Region_t.RegionId) const;
+  rec likeds(Region_t);
+  err likeds(NwError_t);
+end-pr;
+
+// *ON if the key exists
+dcl-pr Reg_exists ind;
+  pRegionId like(Region_t.RegionId) const;
+end-pr;
+
+// Validate a record for ACTION_CREATE or ACTION_UPDATE
+dcl-pr Reg_validate ind;
+  rec    likeds(Region_t) const;
+  action char(1) const;
+  err    likeds(NwError_t);
+end-pr;
+
+// Validate and insert
+dcl-pr Reg_create ind;
+  rec likeds(Region_t);
+  err likeds(NwError_t);
+end-pr;
+
+// Validate and update all non-key columns
+dcl-pr Reg_update ind;
+  rec likeds(Region_t) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Delete by key
+dcl-pr Reg_delete ind;
+  pRegionId like(Region_t.RegionId) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Open the list cursor positioned at region id
+dcl-pr Reg_openList ind;
+  positionTo like(Region_t.RegionId) const;
+  err        likeds(NwError_t);
+end-pr;
+
+// Fetch next row; *OFF at end of list
+dcl-pr Reg_fetchNext ind;
+  rec likeds(Region_t);
+end-pr;
+
+// Close the list cursor
+dcl-pr Reg_closeList;
+end-pr;
+
+// Suggested next free region id
+dcl-pr Reg_nextKey like(Region_t.RegionId);
+end-pr;
+

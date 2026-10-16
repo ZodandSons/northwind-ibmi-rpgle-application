@@ -1,0 +1,80 @@
+/*===================================================================*/
+/* NWRUNTST - Run every Northwind iRPGUnit test suite               */
+/*                                                                   */
+/* Runs each suite with RUCALLTST (through QCMDEXC so the program    */
+/* compiles without iRPGUnit) and reports passed / failed suites.    */
+/* Detailed results: iRPGUnit spooled report and the job log.        */
+/*                                                                   */
+/* Build: CRTBNDCL PGM(NWAPP/NWRUNTST) SRCFILE(NWAPP/QCLLESRC)       */
+/* Run:   CALL NWAPP/NWRUNTST   (menu option 90)                     */
+/*===================================================================*/
+PGM
+
+  DCL        VAR(&APPLIB) TYPE(*CHAR) LEN(10)
+  DCL        VAR(&TST)    TYPE(*CHAR) LEN(10)
+  DCL        VAR(&CMD)    TYPE(*CHAR) LEN(256)
+  DCL        VAR(&CMDLEN) TYPE(*DEC)  LEN(15 5) VALUE(256)
+  DCL        VAR(&RUN)    TYPE(*DEC)  LEN(3 0) VALUE(0)
+  DCL        VAR(&FAIL)   TYPE(*DEC)  LEN(3 0) VALUE(0)
+  DCL        VAR(&CRUN)   TYPE(*CHAR) LEN(3)
+  DCL        VAR(&CFAIL)  TYPE(*CHAR) LEN(3)
+
+  RTVOBJD    OBJ(NWRUNTST) OBJTYPE(*PGM) RTNLIB(&APPLIB)
+  MONMSG     MSGID(CPF9801 CPF9810 CPF9811) EXEC(CHGVAR VAR(&APPLIB) +
+               VALUE('NWAPP'))
+  ADDLIBLE   LIB(RPGUNIT) POSITION(*LAST)
+  MONMSG     MSGID(CPF2103)
+  MONMSG     MSGID(CPF2110) EXEC(DO)
+    SNDPGMMSG  MSGID(CPF9898) MSGF(QCPFMSG) MSGDTA('Library RPGUNIT +
+                 (iRPGUnit) is not installed.') MSGTYPE(*ESCAPE)
+  ENDDO
+  ADDLIBLE   LIB(NORTHWIND) POSITION(*LAST)
+  MONMSG     MSGID(CPF2103 CPF2110)
+
+  CHGVAR     VAR(&TST) VALUE('TNWUTIL')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TCUSTSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TEMPSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TSUPSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TCATSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TPRDSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TSHPSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TREGSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TTERSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TETRSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TDEMSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TCDMSV')
+  CALLSUBR   SUBR(RUN)
+  CHGVAR     VAR(&TST) VALUE('TORDSV')
+  CALLSUBR   SUBR(RUN)
+
+  CHGVAR     VAR(&CRUN)  VALUE(&RUN)
+  CHGVAR     VAR(&CFAIL) VALUE(&FAIL)
+  SNDPGMMSG  MSGID(CPF9898) MSGF(QCPFMSG) MSGDTA(&CRUN *BCAT +
+               'test suites run,' *BCAT &CFAIL *BCAT 'failed.') +
+               TOPGMQ(*PRV) MSGTYPE(*COMP)
+  RETURN
+
+  SUBR       SUBR(RUN)
+    CHGVAR     VAR(&RUN) VALUE(&RUN + 1)
+    CHGVAR     VAR(&CMD) VALUE('RUCALLTST TSTPGM(' *TCAT &APPLIB *TCAT +
+                 '/' *TCAT &TST *TCAT ')')
+    CALL       PGM(QCMDEXC) PARM(&CMD &CMDLEN)
+    MONMSG     MSGID(CPF0000 CEE0000 RNX0000) EXEC(DO)
+      CHGVAR     VAR(&FAIL) VALUE(&FAIL + 1)
+      SNDPGMMSG  MSG('Test suite' *BCAT &TST *BCAT 'reported +
+                   failures or errors.') TOPGMQ(*EXT) MSGTYPE(*INFO)
+    ENDDO
+  ENDSUBR
+
+ENDPGM

@@ -1,0 +1,45 @@
+     A* ======================================================================
+     A* NWMENUD - Northwind main menu (display file for CLLE NWMENU)
+     A* No INDARA: CL programs use &IN03 / &IN12 directly.
+     A* ======================================================================
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      PRINT
+     A          R MENU
+     A                                      CA03(03 'Exit')
+     A                                      CA12(12 'Cancel')
+     A                                  1  2'NWMENU'
+     A                                  1 31'Northwind Traders'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Select one of the following:'
+     A                                  5  4'File maintenance'
+     A                                      DSPATR(HI)
+     A                                  6  6'1. Customers'
+     A                                  7  6'2. Employees'
+     A                                  8  6'3. Suppliers'
+     A                                  9  6'4. Categories'
+     A                                 10  6'5. Products'
+     A                                 11  6'6. Shippers'
+     A                                 12  6'7. Regions'
+     A                                 13  6'8. Territories'
+     A                                 14  6'9. Employee territories'
+     A                                 15  5'10. Customer demographics'
+     A                                 16  5'11. Customer demographic links'
+     A                                  5 46'Orders'
+     A                                      DSPATR(HI)
+     A                                  6 47'20. Order entry'
+     A                                  7 47'21. Order inquiry'
+     A                                  9 46'Utilities'
+     A                                      DSPATR(HI)
+     A                                 10 47'90. Run all unit tests'
+     A                                 20  2'Selection'
+     A            MOPT           2Y 0B 20 13
+     A                                      EDTCDE(4)
+     A                                      DSPATR(PC)
+     A                                 23  2'F3=Exit   F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MMSG          78A  O 24  2
+     A                                      DSPATR(HI)

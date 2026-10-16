@@ -1,0 +1,78 @@
+**free
+//==============================================================================
+// NWCDMPR - Prototypes and record template for NWCDMSV
+//          (Northwind table CUSTOMERCUSTOMERDEMO)
+//==============================================================================
+/if defined(NWCDMPR)
+/eof
+/endif
+/define NWCDMPR
+
+/copy QCPYSRC,NWCOMMON
+
+// One row of CUSTOMERCUSTOMERDEMO. Nullable columns are returned as blanks / zero /
+// NW_NULL_DATE and written back as NULL.
+dcl-ds CustCustDemo_t qualified template;
+  CustomerId     char(5);       // key, -> CUSTOMERS
+  CustomerTypeId char(10);      // key, -> CUSTOMERDEMOGRAPHICS
+end-ds;
+
+// Retrieve one customer demographic by key
+dcl-pr Cdm_get ind;
+  pCustomerId like(CustCustDemo_t.CustomerId) const;
+  pCustomerTypeId like(CustCustDemo_t.CustomerTypeId) const;
+  rec likeds(CustCustDemo_t);
+  err likeds(NwError_t);
+end-pr;
+
+// *ON if the key exists
+dcl-pr Cdm_exists ind;
+  pCustomerId like(CustCustDemo_t.CustomerId) const;
+  pCustomerTypeId like(CustCustDemo_t.CustomerTypeId) const;
+end-pr;
+
+// Validate a record for ACTION_CREATE or ACTION_UPDATE
+dcl-pr Cdm_validate ind;
+  rec    likeds(CustCustDemo_t) const;
+  action char(1) const;
+  err    likeds(NwError_t);
+end-pr;
+
+// Validate and insert
+dcl-pr Cdm_create ind;
+  rec likeds(CustCustDemo_t);
+  err likeds(NwError_t);
+end-pr;
+
+// Delete by key
+dcl-pr Cdm_delete ind;
+  pCustomerId like(CustCustDemo_t.CustomerId) const;
+  pCustomerTypeId like(CustCustDemo_t.CustomerTypeId) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Open the list cursor positioned at customer
+dcl-pr Cdm_openList ind;
+  positionTo like(CustCustDemo_t.CustomerId) const;
+  err        likeds(NwError_t);
+end-pr;
+
+// Fetch next row; *OFF at end of list
+dcl-pr Cdm_fetchNext ind;
+  rec likeds(CustCustDemo_t);
+end-pr;
+
+// Close the list cursor
+dcl-pr Cdm_closeList;
+end-pr;
+
+// Description of customer (blank if not found)
+dcl-pr Cdm_CustomerIdDesc varchar(50);
+  value like(CustCustDemo_t.CustomerId) const;
+end-pr;
+
+// Description of customer type (blank if not found)
+dcl-pr Cdm_CustomerTypeIdDesc varchar(50);
+  value like(CustCustDemo_t.CustomerTypeId) const;
+end-pr;
+

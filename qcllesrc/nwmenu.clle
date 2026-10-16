@@ -1,0 +1,76 @@
+/*===================================================================*/
+/* NWMENU - Northwind Traders main menu                              */
+/*                                                                   */
+/* Adds the data library (NORTHWIND) and the application library     */
+/* (NWAPP, or wherever NWMENU is found on the library list) to the   */
+/* library list, then shows the menu until F3/F12.                   */
+/*                                                                   */
+/* Build: CRTBNDCL PGM(NWAPP/NWMENU) SRCFILE(NWAPP/QCLLESRC)         */
+/* Run:   CALL NWAPP/NWMENU  (optional parm: data library name)      */
+/*===================================================================*/
+PGM        PARM(&DATALIBP)
+
+  DCL        VAR(&DATALIBP) TYPE(*CHAR) LEN(10)
+  DCL        VAR(&DATALIB)  TYPE(*CHAR) LEN(10) VALUE('NORTHWIND')
+  DCL        VAR(&APPLIB)   TYPE(*CHAR) LEN(10)
+  DCL        VAR(&PGMNAME)  TYPE(*CHAR) LEN(10)
+  DCLF       FILE(NWMENUD)
+
+  /* Optional parameter: data library (MCH3601 = parameter not passed) */
+  CHGVAR     VAR(&PGMNAME) VALUE(&DATALIBP)
+  MONMSG     MSGID(MCH3601) EXEC(CHGVAR VAR(&PGMNAME) VALUE(' '))
+  IF         COND(&PGMNAME *NE ' ') THEN(CHGVAR VAR(&DATALIB) VALUE(&PGMNAME))
+
+  /* Library lists: data library and the library this menu came from */
+  ADDLIBLE   LIB(&DATALIB) POSITION(*LAST)
+  MONMSG     MSGID(CPF2103 CPF2110 CPF2113)
+  /* RTVOBJD searches the library list; if NWMENU was called with a    */
+  /* qualified name and its library is not on the list, use NWAPP.      */
+  RTVOBJD    OBJ(NWMENU) OBJTYPE(*PGM) RTNLIB(&APPLIB)
+  MONMSG     MSGID(CPF9801 CPF9810 CPF9811) EXEC(CHGVAR VAR(&APPLIB) +
+               VALUE('NWAPP'))
+  ADDLIBLE   LIB(&APPLIB) POSITION(*FIRST)
+  MONMSG     MSGID(CPF2103 CPF2110 CPF2113)
+
+  CHGVAR     VAR(&MMSG) VALUE(' ')
+  CHGVAR     VAR(&MOPT) VALUE(0)
+
+LOOP:
+  SNDRCVF    RCDFMT(MENU)
+  IF         COND(&IN03 *EQ '1' *OR &IN12 *EQ '1') THEN(GOTO CMDLBL(DONE))
+
+  CHGVAR     VAR(&MMSG) VALUE(' ')
+  CHGVAR     VAR(&PGMNAME) VALUE(' ')
+  SELECT
+    WHEN       COND(&MOPT *EQ 1)  THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKCUST'))
+    WHEN       COND(&MOPT *EQ 2)  THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKEMP'))
+    WHEN       COND(&MOPT *EQ 3)  THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKSUP'))
+    WHEN       COND(&MOPT *EQ 4)  THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKCAT'))
+    WHEN       COND(&MOPT *EQ 5)  THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKPRD'))
+    WHEN       COND(&MOPT *EQ 6)  THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKSHP'))
+    WHEN       COND(&MOPT *EQ 7)  THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKREG'))
+    WHEN       COND(&MOPT *EQ 8)  THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKTER'))
+    WHEN       COND(&MOPT *EQ 9)  THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKETR'))
+    WHEN       COND(&MOPT *EQ 10) THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKDEM'))
+    WHEN       COND(&MOPT *EQ 11) THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKCDM'))
+    WHEN       COND(&MOPT *EQ 20) THEN(CHGVAR VAR(&PGMNAME) VALUE('ORDENT'))
+    WHEN       COND(&MOPT *EQ 21) THEN(CHGVAR VAR(&PGMNAME) VALUE('WRKORD'))
+    WHEN       COND(&MOPT *EQ 90) THEN(CHGVAR VAR(&PGMNAME) VALUE('NWRUNTST'))
+    WHEN       COND(&MOPT *EQ 0)  THEN(GOTO CMDLBL(LOOP))
+    OTHERWISE  CMD(CHGVAR VAR(&MMSG) VALUE('Selection is not valid.'))
+  ENDSELECT
+
+  IF         COND(&PGMNAME *NE ' ') THEN(DO)
+    CALL       PGM(&PGMNAME)
+    MONMSG     MSGID(CPF0000 CEE0000 RNX0000) EXEC(CHGVAR VAR(&MMSG) +
+                 VALUE('Program' *BCAT &PGMNAME *BCAT +
+                 'ended with an error. See the job log.'))
+    IF         COND(&MOPT *EQ 90 *AND &MMSG *EQ ' ') THEN(CHGVAR +
+                 VAR(&MMSG) VALUE('Unit tests finished. See the job log +
+                 for results.'))
+  ENDDO
+  CHGVAR     VAR(&MOPT) VALUE(0)
+  GOTO       CMDLBL(LOOP)
+
+DONE:
+ENDPGM

@@ -1,0 +1,192 @@
+     A* ======================================================================
+     A* WRKPRDD - Work with Products (display file for WRKPRD)
+     A* Records: SFL01/CTL01/FKEYS01 list, DETAIL, SFL02/CTL02/FKEYS02 delete
+     A* ======================================================================
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A                                      PRINT
+     A                                      CA03(03 'Exit')
+     A                                      CA12(12 'Cancel')
+     A* List subfile
+     A          R SFL01                     SFL
+     A            S1OPT          1A  B  9  3VALUES(' ' '2' '3' '4' '5')
+     A            S1PRDID        6Y 0O  9  7
+     A                                      EDTCDE(4)
+     A            S1PRDNAME     32A  O  9 15
+     A            S1PRICE       11Y 2O  9 49
+     A                                      EDTCDE(1)
+     A            S1INSTOCK      4Y 0O  9 65
+     A                                      EDTCDE(3)
+     A            S1DISC         1Y 0O  9 71
+     A                                      EDTCDE(3)
+     A            H1PRDID        9S 0H
+     A* List control
+     A          R CTL01                     SFLCTL(SFL01)
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      CF05(05 'Refresh')
+     A                                      CF06(06 'Create')
+     A                                      OVERLAY
+     A  31                                  SFLDSP
+     A  32                                  SFLDSPCTL
+     A  33                                  SFLCLR
+     A  34                                  SFLEND(*MORE)
+     A            C1RRN          4S 0H      SFLRCDNBR(CURSOR)
+     A                                  1  2'WRKPRD'
+     A                                  1 31'Work with Products'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Position to product  . .'
+     A            C1POS         20A  B  3 27
+     A                                  5  2'Type options, press Enter.'
+     A                                      COLOR(BLU)
+     A                                  6  4'2=Change   3=Copy   4=Delete'
+     A                                      COLOR(BLU)
+     A                                  6 35'5=Display'
+     A                                      COLOR(BLU)
+     A                                  8  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  8  7'ID'
+     A                                      DSPATR(HI)
+     A                                  8 15'Product'
+     A                                      DSPATR(HI)
+     A                                  8 49'Price'
+     A                                      DSPATR(HI)
+     A                                  8 65'Stoc'
+     A                                      DSPATR(HI)
+     A                                  8 71'D'
+     A                                      DSPATR(HI)
+     A* List function keys and message line
+     A          R FKEYS01
+     A                                      OVERLAY
+     A                                 23  2'F3=Exit   F5=Refresh   F6=Create'
+     A                                      COLOR(BLU)
+     A                                 23 37'F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MSG1          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Detail panel: create / change / copy / display
+     A          R DETAIL
+     A                                  1  2'WRKPRD'
+     A            PTITLE        40A  O  1 21
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A            PINSTR        60A  O  3  2
+     A                                      COLOR(BLU)
+     A                                  5  2'Product ID . . .'
+     A            DPRDID         9Y 0O  5 20
+     A                                      EDTCDE(4)
+     A                                  5 31'(assigned by system)'
+     A                                      COLOR(BLU)
+     A                                  6  2'Product name . .'
+     A            DPRDNAME      40A  B  6 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  52                                  DSPATR(RI PC)
+     A                                  7  2'Supplier . . . .'
+     A            DSUPID         9Y 0B  7 20
+     A                                      EDTCDE(4)
+     A  40                                  DSPATR(PR)
+     A  53                                  DSPATR(RI PC)
+     A            NSUPID        40A  O  7 31
+     A                                  8  2'Category . . . .'
+     A            DCATID         9Y 0B  8 20
+     A                                      EDTCDE(4)
+     A  40                                  DSPATR(PR)
+     A  54                                  DSPATR(RI PC)
+     A            NCATID        40A  O  8 31
+     A                                  9  2'Quantity/unit  .'
+     A            DQTYUNIT      20A  B  9 20
+     A                                      CHECK(LC)
+     A  40                                  DSPATR(PR)
+     A  55                                  DSPATR(RI PC)
+     A                                 10  2'Unit price . . .'
+     A            DPRICE        11Y 2B 10 20
+     A                                      EDTCDE(1)
+     A  40                                  DSPATR(PR)
+     A  56                                  DSPATR(RI PC)
+     A                                 11  2'Units in stock .'
+     A            DINSTOCK       4Y 0B 11 20
+     A                                      EDTCDE(3)
+     A  40                                  DSPATR(PR)
+     A  57                                  DSPATR(RI PC)
+     A                                 12  2'Units on order .'
+     A            DONORDER       4Y 0B 12 20
+     A                                      EDTCDE(3)
+     A  40                                  DSPATR(PR)
+     A  58                                  DSPATR(RI PC)
+     A                                 13  2'Reorder level  .'
+     A            DREORDER       4Y 0B 13 20
+     A                                      EDTCDE(3)
+     A  40                                  DSPATR(PR)
+     A  59                                  DSPATR(RI PC)
+     A                                 14  2'Discontinued . .'
+     A            DDISC          1Y 0B 14 20
+     A                                      EDTCDE(3)
+     A  40                                  DSPATR(PR)
+     A  60                                  DSPATR(RI PC)
+     A                                 14 23'(0=No, 1=Yes)'
+     A                                      COLOR(BLU)
+     A            PKEYS         78A  O 23  2
+     A                                      COLOR(BLU)
+     A            PMSG          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Confirm delete subfile
+     A          R SFL02                     SFL
+     A            X2OPT          1A  O  8  3
+     A            X2PRDID        6Y 0O  8  7
+     A                                      EDTCDE(4)
+     A            X2PRDNAME     32A  O  8 15
+     A            X2PRICE       11Y 2O  8 49
+     A                                      EDTCDE(1)
+     A            X2INSTOCK      4Y 0O  8 65
+     A                                      EDTCDE(3)
+     A            X2DISC         1Y 0O  8 71
+     A                                      EDTCDE(3)
+     A          R CTL02                     SFLCTL(SFL02)
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      OVERLAY
+     A  35                                  SFLDSP
+     A  36                                  SFLDSPCTL
+     A  37                                  SFLCLR
+     A  38                                  SFLEND(*MORE)
+     A                                  1  2'WRKPRD'
+     A                                  1 27'Confirm Delete of Products'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Press Enter to confirm your'
+     A                                      COLOR(BLU)
+     A                                  3 30'choices for 4=Delete.'
+     A                                      COLOR(BLU)
+     A                                  4  2'Press F12=Cancel to return to'
+     A                                      COLOR(BLU)
+     A                                  4 32'change your choices.'
+     A                                      COLOR(BLU)
+     A                                  7  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  7  7'ID'
+     A                                      DSPATR(HI)
+     A                                  7 15'Product'
+     A                                      DSPATR(HI)
+     A                                  7 49'Price'
+     A                                      DSPATR(HI)
+     A                                  7 65'Stoc'
+     A                                      DSPATR(HI)
+     A                                  7 71'D'
+     A                                      DSPATR(HI)
+     A          R FKEYS02
+     A                                      OVERLAY
+     A                                 23  2'F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MSG2          78A  O 24  2
+     A                                      DSPATR(HI)

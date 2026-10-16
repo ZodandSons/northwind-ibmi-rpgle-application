@@ -1,0 +1,89 @@
+**free
+//==============================================================================
+// NWPRDPR - Prototypes and record template for NWPRDSV
+//          (Northwind table PRODUCTS)
+//==============================================================================
+/if defined(NWPRDPR)
+/eof
+/endif
+/define NWPRDPR
+
+/copy QCPYSRC,NWCOMMON
+
+// One row of PRODUCTS. Nullable columns are returned as blanks / zero /
+// NW_NULL_DATE and written back as NULL.
+dcl-ds Product_t qualified template;
+  ProductId       int(10);       // key (identity)
+  ProductName     varchar(40);
+  SupplierId      int(10);       // nullable, -> SUPPLIERS
+  CategoryId      int(10);       // nullable, -> CATEGORIES
+  QuantityPerUnit varchar(20);   // nullable
+  UnitPrice       packed(19:4);  // nullable
+  UnitsInStock    int(5);        // nullable
+  UnitsOnOrder    int(5);        // nullable
+  ReorderLevel    int(5);        // nullable
+  Discontinued    int(5);
+end-ds;
+
+// Retrieve one product by key
+dcl-pr Prd_get ind;
+  pProductId like(Product_t.ProductId) const;
+  rec likeds(Product_t);
+  err likeds(NwError_t);
+end-pr;
+
+// *ON if the key exists
+dcl-pr Prd_exists ind;
+  pProductId like(Product_t.ProductId) const;
+end-pr;
+
+// Validate a record for ACTION_CREATE or ACTION_UPDATE
+dcl-pr Prd_validate ind;
+  rec    likeds(Product_t) const;
+  action char(1) const;
+  err    likeds(NwError_t);
+end-pr;
+
+// Validate and insert (identity key returned in rec)
+dcl-pr Prd_create ind;
+  rec likeds(Product_t);
+  err likeds(NwError_t);
+end-pr;
+
+// Validate and update all non-key columns
+dcl-pr Prd_update ind;
+  rec likeds(Product_t) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Delete by key
+dcl-pr Prd_delete ind;
+  pProductId like(Product_t.ProductId) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Open the list cursor positioned at product name
+dcl-pr Prd_openList ind;
+  positionTo like(Product_t.ProductName) const;
+  err        likeds(NwError_t);
+end-pr;
+
+// Fetch next row; *OFF at end of list
+dcl-pr Prd_fetchNext ind;
+  rec likeds(Product_t);
+end-pr;
+
+// Close the list cursor
+dcl-pr Prd_closeList;
+end-pr;
+
+// Description of supplier (blank if not found)
+dcl-pr Prd_SupplierIdDesc varchar(50);
+  value like(Product_t.SupplierId) const;
+end-pr;
+
+// Description of category (blank if not found)
+dcl-pr Prd_CategoryIdDesc varchar(50);
+  value like(Product_t.CategoryId) const;
+end-pr;
+

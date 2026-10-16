@@ -1,0 +1,190 @@
+     A* ======================================================================
+     A* WRKORDD - Order Inquiry (display file for WRKORD)
+     A* ======================================================================
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A                                      PRINT
+     A                                      CA03(03 'Exit')
+     A                                      CA12(12 'Cancel')
+     A* Order list
+     A          R SFL01                     SFL
+     A            S1OPT          1A  B  9  3
+     A                                      VALUES(' ' '5')
+     A            S1ORDID        6Y 0O  9  6
+     A                                      EDTCDE(4)
+     A            S1CUSTID       5A  O  9 13
+     A            S1COMPANY     22A  O  9 19
+     A            S1ORDDT       10A  O  9 42
+     A            S1SHPDT       10A  O  9 53
+     A            S1TOTAL       11Y 2O  9 64
+     A                                      EDTCDE(1)
+     A          R CTL01                     SFLCTL(SFL01)
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      CF04(04 'Prompt')
+     A                                      CF05(05 'Refresh')
+     A                                      OVERLAY
+     A                                      RTNCSRLOC(&C1RCD &C1FLD)
+     A  31                                  SFLDSP
+     A  32                                  SFLDSPCTL
+     A  33                                  SFLCLR
+     A  34                                  SFLEND(*MORE)
+     A            C1RRN          4S 0H
+     A                                      SFLRCDNBR(CURSOR)
+     A            C1RCD         10A  H
+     A            C1FLD         10A  H
+     A                                  1  2'WRKORD'
+     A                                  1 33'Order Inquiry'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Customer . . .'
+     A            FCUST          5A  B  3 17
+     A  51                                  DSPATR(RI PC)
+     A                                  3 25'From date . .'
+     A            FFROM         10A  B  3 39
+     A  52                                  DSPATR(RI PC)
+     A                                  3 52'To date  . .'
+     A            FTO           10A  B  3 65
+     A  53                                  DSPATR(RI PC)
+     A                                  4  2'Open only  . .'
+     A            FOPEN          1A  B  4 17
+     A                                      VALUES('Y' 'N')
+     A                                  4 19'Y/N'
+     A                                      COLOR(BLU)
+     A                                  4 25'Start at order'
+     A            FSTART         9Y 0B  4 40
+     A                                      EDTCDE(4)
+     A                                  6  2'Type options, press Enter.'
+     A                                      COLOR(BLU)
+     A                                  7  4'5=Display order'
+     A                                      COLOR(BLU)
+     A                                  8  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  8  6'Order'
+     A                                      DSPATR(HI)
+     A                                  8 13'Cust'
+     A                                      DSPATR(HI)
+     A                                  8 19'Company'
+     A                                      DSPATR(HI)
+     A                                  8 42'Ordered'
+     A                                      DSPATR(HI)
+     A                                  8 53'Shipped'
+     A                                      DSPATR(HI)
+     A                                  8 71'Total'
+     A                                      DSPATR(HI)
+     A          R FKEYS01
+     A                                 23  2'F3=Exit   F4=Prompt   F5=Refresh'
+     A                                      COLOR(BLU)
+     A                                 23 37'F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MSG1          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Display order: header (control) + lines (subfile) + totals
+     A          R DSPSFL                    SFL
+     A            DPRDID         6Y 0O 12  2
+     A                                      EDTCDE(4)
+     A            DPRDNM        30A  O 12 10
+     A            DPRICE         9Y 2O 12 41
+     A                                      EDTCDE(1)
+     A            DQTY           5Y 0O 12 54
+     A                                      EDTCDE(3)
+     A            DDISC          5Y 2O 12 60
+     A                                      EDTCDE(3)
+     A            DEXT           9Y 2O 12 67
+     A                                      EDTCDE(1)
+     A          R DSPCTL                    SFLCTL(DSPSFL)
+     A                                      SFLSIZ(0051)
+     A                                      SFLPAG(0008)
+     A                                      OVERLAY
+     A  35                                  SFLDSP
+     A  36                                  SFLDSPCTL
+     A  37                                  SFLCLR
+     A  38                                  SFLEND(*MORE)
+     A                                  1  2'WRKORD'
+     A                                  1 33'Display Order'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Order  . . . :'
+     A            OORDID         9Y 0O  3 17
+     A                                      EDTCDE(4)
+     A                                      DSPATR(HI)
+     A                                  3 29'Customer . :'
+     A            OCUSTID        5A  O  3 42
+     A            OCUSTNM       30A  O  3 48
+     A                                  4  2'Employee . . :'
+     A            OEMPNM        25A  O  4 17
+     A                                  4 44'Ship via . :'
+     A            OSHPNM        22A  O  4 57
+     A                                  5  2'Ordered  . . :'
+     A            OORDDT        10A  O  5 17
+     A                                  5 29'Required . :'
+     A            OREQDT        10A  O  5 42
+     A                                  5 54'Shipped  :'
+     A            OSHPDT        10A  O  5 65
+     A                                  6  2'Ship to  . . :'
+     A            OSHPNAME      40A  O  6 17
+     A            OSHPADDR      60A  O  7 17
+     A            OSHPCITY      15A  O  8 17
+     A            OSHPREG       15A  O  8 33
+     A            OSHPPOST      10A  O  8 49
+     A            OSHPCTRY      15A  O  8 60
+     A                                 11  2'Prod'
+     A                                      DSPATR(HI)
+     A                                 11 10'Description'
+     A                                      DSPATR(HI)
+     A                                 11 46'Price'
+     A                                      DSPATR(HI)
+     A                                 11 55'Qty'
+     A                                      DSPATR(HI)
+     A                                 11 60'Disc%'
+     A                                      DSPATR(HI)
+     A                                 11 71'Extended'
+     A                                      DSPATR(HI)
+     A          R DSPFTR
+     A                                 21  2'Subtotal:'
+     A            OSUBTOT       11Y 2O 21 12
+     A                                      EDTCDE(1)
+     A                                 21 28'Freight:'
+     A            OFRT           9Y 2O 21 37
+     A                                      EDTCDE(1)
+     A                                 21 51'Total:'
+     A            OTOTAL        11Y 2O 21 58
+     A                                      EDTCDE(1)
+     A                                      DSPATR(HI)
+     A                                 23  2'F3=Exit   F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MSG2          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Select window (F4=Prompt) - customers, employees, shippers, products
+     A          R WINSFL                    SFL
+     A            WOPT           1A  B  5  2
+     A                                      VALUES(' ' '1')
+     A            WCODE         10A  O  5  6
+     A            WDESC         37A  O  5 17
+     A          R WINCTL                    SFLCTL(WINSFL)
+     A                                      SFLSIZ(0011)
+     A                                      SFLPAG(0010)
+     A                                      WINDOW(4 12 16 55)
+     A                                      OVERLAY
+     A  71                                  SFLDSP
+     A  72                                  SFLDSPCTL
+     A  73                                  SFLCLR
+     A  74                                  SFLEND(*MORE)
+     A            WTITLE        40A  O  1  2
+     A                                      DSPATR(HI)
+     A                                  2  2'Position to . .'
+     A            WPOS          20A  B  2 18
+     A                                  3  2'1=Select   F12=Cancel'
+     A                                      COLOR(BLU)
+     A                                  4  2'Opt'
+     A                                      DSPATR(HI)
+     A            WHDR1         10A  O  4  6
+     A                                      DSPATR(HI)
+     A            WHDR2         37A  O  4 17
+     A                                      DSPATR(HI)

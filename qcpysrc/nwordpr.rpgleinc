@@ -1,0 +1,157 @@
+**free
+//==============================================================================
+// NWORDPR - Prototypes and templates for NWORDSV (orders and order lines)
+//          (Northwind tables ORDERS and ORDERDETAILS, view ORDERSUBTOTALS)
+//==============================================================================
+/if defined(NWORDPR)
+/eof
+/endif
+/define NWORDPR
+
+/copy QCPYSRC,NWCOMMON
+
+// Maximum lines on one order in Order Entry
+dcl-c ORD_MAX_LINES 50;
+
+// One ORDERS row. Nullable columns come back as blank / 0 / NW_NULL_DATE.
+dcl-ds OrderHeader_t qualified template;
+  OrderId        int(10);         // identity, assigned on create
+  CustomerId     char(5);         // -> CUSTOMERS
+  EmployeeId     int(10);         // -> EMPLOYEES
+  OrderDate      date;
+  RequiredDate   date;
+  ShippedDate    date;            // NW_NULL_DATE = not shipped (open)
+  ShipVia        int(10);         // -> SHIPPERS
+  Freight        packed(19:4);
+  ShipName       varchar(40);
+  ShipAddress    varchar(60);
+  ShipCity       varchar(15);
+  ShipRegion     varchar(15);
+  ShipPostalCode varchar(10);
+  ShipCountry    varchar(15);
+end-ds;
+
+// One ORDERDETAILS row (+ product name and extended price when read)
+dcl-ds OrderLine_t qualified template;
+  OrderId     int(10);
+  ProductId   int(10);            // -> PRODUCTS
+  UnitPrice   packed(19:4);
+  Quantity    int(5);             // 1 - 32767
+  Discount    float(4);           // fraction 0.00 - 1.00 (REAL column)
+  ProductName varchar(40);        // read only
+  ExtPrice    packed(19:4);       // read only: price * qty * (1 - discount)
+end-ds;
+
+// One row of the order inquiry list
+dcl-ds OrderSummary_t qualified template;
+  OrderId      int(10);
+  CustomerId   char(5);
+  CompanyName  varchar(40);
+  EmployeeId   int(10);
+  OrderDate    date;
+  RequiredDate date;
+  ShippedDate  date;
+  Freight      packed(19:4);
+  SubTotal     packed(19:4);
+end-ds;
+
+// Selection for the order inquiry list
+dcl-ds OrderFilter_t qualified template;
+  CustomerId   char(5);           // blank = all customers
+  FromDate     date;              // NW_NULL_DATE = no lower bound
+  ToDate       date;              // NW_NULL_DATE = no upper bound
+  OpenOnly     ind;               // *ON = only orders not yet shipped
+  StartOrderId int(10);           // 0 = newest; else orders <= this number
+end-ds;
+
+// Extended price of a line, rounded to cents
+dcl-pr Ord_calcExtPrice packed(19:4);
+  unitPrice packed(19:4) const;
+  quantity  int(5) const;
+  discount  float(4) const;
+end-pr;
+
+// Fill the ship-to fields of an order from the customer master
+dcl-pr Ord_defaultShipTo ind;
+  customerId char(5) const;
+  hdr        likeds(OrderHeader_t);
+  err        likeds(NwError_t);
+end-pr;
+
+// Validate an order header for creation
+dcl-pr Ord_validateHeader ind;
+  hdr likeds(OrderHeader_t) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Validate one order line (product, price, quantity, discount)
+dcl-pr Ord_validateLine ind;
+  line likeds(OrderLine_t) const;
+  err  likeds(NwError_t);
+end-pr;
+
+// Create an order with its lines in one transaction (COMMIT / ROLLBACK).
+// hdr.OrderId receives the new order number.
+dcl-pr Ord_create ind;
+  hdr       likeds(OrderHeader_t);
+  lines     likeds(OrderLine_t) dim(ORD_MAX_LINES) const;
+  lineCount int(10) const;
+  err       likeds(NwError_t);
+end-pr;
+
+// Retrieve an order header
+dcl-pr Ord_get ind;
+  orderId int(10) const;
+  hdr     likeds(OrderHeader_t);
+  err     likeds(NwError_t);
+end-pr;
+
+// Delete an order that has not shipped (lines and header, one transaction)
+dcl-pr Ord_delete ind;
+  orderId int(10) const;
+  err     likeds(NwError_t);
+end-pr;
+
+// Sum of extended prices of an order's lines
+dcl-pr Ord_subTotal packed(19:4);
+  orderId int(10) const;
+end-pr;
+
+// Order lines cursor
+dcl-pr Ord_openLines ind;
+  orderId int(10) const;
+  err     likeds(NwError_t);
+end-pr;
+
+dcl-pr Ord_fetchLine ind;
+  line likeds(OrderLine_t);
+end-pr;
+
+dcl-pr Ord_closeLines;
+end-pr;
+
+// Order inquiry list cursor (newest first)
+dcl-pr Ord_openList ind;
+  filter likeds(OrderFilter_t) const;
+  err    likeds(NwError_t);
+end-pr;
+
+dcl-pr Ord_fetchList ind;
+  row likeds(OrderSummary_t);
+end-pr;
+
+dcl-pr Ord_closeList;
+end-pr;
+
+// Names for display (blank if not found)
+dcl-pr Ord_customerName varchar(40);
+  customerId char(5) const;
+end-pr;
+
+dcl-pr Ord_employeeName varchar(40);
+  employeeId int(10) const;
+end-pr;
+
+dcl-pr Ord_shipperName varchar(40);
+  shipperId int(10) const;
+end-pr;

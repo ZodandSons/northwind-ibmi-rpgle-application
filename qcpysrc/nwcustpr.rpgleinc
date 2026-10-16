@@ -1,0 +1,80 @@
+**free
+//==============================================================================
+// NWCUSTPR - Prototypes and record template for NWCUSTSV
+//          (Northwind table CUSTOMERS)
+//==============================================================================
+/if defined(NWCUSTPR)
+/eof
+/endif
+/define NWCUSTPR
+
+/copy QCPYSRC,NWCOMMON
+
+// One row of CUSTOMERS. Nullable columns are returned as blanks / zero /
+// NW_NULL_DATE and written back as NULL.
+dcl-ds Customer_t qualified template;
+  CustomerId   char(5);       // key
+  CompanyName  varchar(40);
+  ContactName  varchar(30);   // nullable
+  ContactTitle varchar(30);   // nullable
+  Address      varchar(60);   // nullable
+  City         varchar(15);   // nullable
+  Region       varchar(15);   // nullable
+  PostalCode   varchar(10);   // nullable
+  Country      varchar(15);   // nullable
+  Phone        varchar(24);   // nullable
+  Fax          varchar(24);   // nullable
+end-ds;
+
+// Retrieve one customer by key
+dcl-pr Cust_get ind;
+  pCustomerId like(Customer_t.CustomerId) const;
+  rec likeds(Customer_t);
+  err likeds(NwError_t);
+end-pr;
+
+// *ON if the key exists
+dcl-pr Cust_exists ind;
+  pCustomerId like(Customer_t.CustomerId) const;
+end-pr;
+
+// Validate a record for ACTION_CREATE or ACTION_UPDATE
+dcl-pr Cust_validate ind;
+  rec    likeds(Customer_t) const;
+  action char(1) const;
+  err    likeds(NwError_t);
+end-pr;
+
+// Validate and insert
+dcl-pr Cust_create ind;
+  rec likeds(Customer_t);
+  err likeds(NwError_t);
+end-pr;
+
+// Validate and update all non-key columns
+dcl-pr Cust_update ind;
+  rec likeds(Customer_t) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Delete by key
+dcl-pr Cust_delete ind;
+  pCustomerId like(Customer_t.CustomerId) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Open the list cursor positioned at customer id
+dcl-pr Cust_openList ind;
+  positionTo like(Customer_t.CustomerId) const;
+  err        likeds(NwError_t);
+end-pr;
+
+// Fetch next row; *OFF at end of list
+dcl-pr Cust_fetchNext ind;
+  rec likeds(Customer_t);
+end-pr;
+
+// Close the list cursor
+dcl-pr Cust_closeList;
+end-pr;
+

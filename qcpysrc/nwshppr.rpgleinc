@@ -1,0 +1,72 @@
+**free
+//==============================================================================
+// NWSHPPR - Prototypes and record template for NWSHPSV
+//          (Northwind table SHIPPERS)
+//==============================================================================
+/if defined(NWSHPPR)
+/eof
+/endif
+/define NWSHPPR
+
+/copy QCPYSRC,NWCOMMON
+
+// One row of SHIPPERS. Nullable columns are returned as blanks / zero /
+// NW_NULL_DATE and written back as NULL.
+dcl-ds Shipper_t qualified template;
+  ShipperId   int(10);       // key (identity)
+  CompanyName varchar(40);
+  Phone       varchar(24);   // nullable
+end-ds;
+
+// Retrieve one shipper by key
+dcl-pr Shp_get ind;
+  pShipperId like(Shipper_t.ShipperId) const;
+  rec likeds(Shipper_t);
+  err likeds(NwError_t);
+end-pr;
+
+// *ON if the key exists
+dcl-pr Shp_exists ind;
+  pShipperId like(Shipper_t.ShipperId) const;
+end-pr;
+
+// Validate a record for ACTION_CREATE or ACTION_UPDATE
+dcl-pr Shp_validate ind;
+  rec    likeds(Shipper_t) const;
+  action char(1) const;
+  err    likeds(NwError_t);
+end-pr;
+
+// Validate and insert (identity key returned in rec)
+dcl-pr Shp_create ind;
+  rec likeds(Shipper_t);
+  err likeds(NwError_t);
+end-pr;
+
+// Validate and update all non-key columns
+dcl-pr Shp_update ind;
+  rec likeds(Shipper_t) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Delete by key
+dcl-pr Shp_delete ind;
+  pShipperId like(Shipper_t.ShipperId) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Open the list cursor positioned at shipper id
+dcl-pr Shp_openList ind;
+  positionTo like(Shipper_t.ShipperId) const;
+  err        likeds(NwError_t);
+end-pr;
+
+// Fetch next row; *OFF at end of list
+dcl-pr Shp_fetchNext ind;
+  rec likeds(Shipper_t);
+end-pr;
+
+// Close the list cursor
+dcl-pr Shp_closeList;
+end-pr;
+

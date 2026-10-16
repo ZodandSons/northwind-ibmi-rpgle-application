@@ -1,0 +1,78 @@
+**free
+//==============================================================================
+// NWETRPR - Prototypes and record template for NWETRSV
+//          (Northwind table EMPLOYEETERRITORIES)
+//==============================================================================
+/if defined(NWETRPR)
+/eof
+/endif
+/define NWETRPR
+
+/copy QCPYSRC,NWCOMMON
+
+// One row of EMPLOYEETERRITORIES. Nullable columns are returned as blanks / zero /
+// NW_NULL_DATE and written back as NULL.
+dcl-ds EmpTerritory_t qualified template;
+  EmployeeId  int(10);       // key, -> EMPLOYEES
+  TerritoryId varchar(20);   // key, -> TERRITORIES
+end-ds;
+
+// Retrieve one employee territory by key
+dcl-pr Etr_get ind;
+  pEmployeeId like(EmpTerritory_t.EmployeeId) const;
+  pTerritoryId like(EmpTerritory_t.TerritoryId) const;
+  rec likeds(EmpTerritory_t);
+  err likeds(NwError_t);
+end-pr;
+
+// *ON if the key exists
+dcl-pr Etr_exists ind;
+  pEmployeeId like(EmpTerritory_t.EmployeeId) const;
+  pTerritoryId like(EmpTerritory_t.TerritoryId) const;
+end-pr;
+
+// Validate a record for ACTION_CREATE or ACTION_UPDATE
+dcl-pr Etr_validate ind;
+  rec    likeds(EmpTerritory_t) const;
+  action char(1) const;
+  err    likeds(NwError_t);
+end-pr;
+
+// Validate and insert
+dcl-pr Etr_create ind;
+  rec likeds(EmpTerritory_t);
+  err likeds(NwError_t);
+end-pr;
+
+// Delete by key
+dcl-pr Etr_delete ind;
+  pEmployeeId like(EmpTerritory_t.EmployeeId) const;
+  pTerritoryId like(EmpTerritory_t.TerritoryId) const;
+  err likeds(NwError_t);
+end-pr;
+
+// Open the list cursor positioned at employee
+dcl-pr Etr_openList ind;
+  positionTo like(EmpTerritory_t.EmployeeId) const;
+  err        likeds(NwError_t);
+end-pr;
+
+// Fetch next row; *OFF at end of list
+dcl-pr Etr_fetchNext ind;
+  rec likeds(EmpTerritory_t);
+end-pr;
+
+// Close the list cursor
+dcl-pr Etr_closeList;
+end-pr;
+
+// Description of employee (blank if not found)
+dcl-pr Etr_EmployeeIdDesc varchar(50);
+  value like(EmpTerritory_t.EmployeeId) const;
+end-pr;
+
+// Description of territory (blank if not found)
+dcl-pr Etr_TerritoryIdDesc varchar(50);
+  value like(EmpTerritory_t.TerritoryId) const;
+end-pr;
+

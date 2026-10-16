@@ -1,0 +1,60 @@
+**free
+//==============================================================================
+// NWCOMMON - Northwind application: shared constants and templates
+//
+// Included by every service program, display program and unit test.
+//==============================================================================
+/if defined(NWCOMMON)
+/eof
+/endif
+/define NWCOMMON
+
+// ---------------------------------------------------------------------------
+// Standard error structure. Every service-program procedure that can fail
+// takes one of these as its last parameter and returns *OFF on failure.
+//   code     : NWExxxx application code, or SQLxxxx for database errors
+//   field    : RPG subfield name of the field in error (for cursor/highlight)
+//   text     : message suitable for line 24 of a 5250 panel
+//   sqlState : SQLSTATE of the failing statement (blank if not SQL)
+//   sqlCode  : SQLCODE of the failing statement (0 if not SQL)
+// ---------------------------------------------------------------------------
+dcl-ds NwError_t qualified template;
+  code     char(7);
+  field    varchar(30);
+  text     varchar(132);
+  sqlState char(5);
+  sqlCode  int(10);
+end-ds;
+
+// Nullable DATE columns are mapped to this value (and back to NULL on write)
+dcl-c NW_NULL_DATE     d'0001-01-01';
+
+// Size of CLOB columns as handled by the application (CAST to VARCHAR)
+dcl-c NW_CLOB_MAX      1024;
+
+// Text editor panel geometry (12 lines x 76 columns)
+dcl-c NW_TEXT_LINES    12;
+dcl-c NW_TEXT_WIDTH    76;
+dcl-s NwTextLine_t     char(76) template;
+
+// Maximum subfile records (5250 hard limit)
+dcl-c NW_SFL_MAX       9999;
+
+// Work-with panel modes
+dcl-c MODE_CREATE      'A';
+dcl-c MODE_CHANGE      'C';
+dcl-c MODE_COPY        'P';
+dcl-c MODE_DISPLAY     'D';
+
+// Validation actions passed to xxx_validate()
+dcl-c ACTION_CREATE    'C';
+dcl-c ACTION_UPDATE    'U';
+
+// Application message codes
+dcl-c NWE_REQUIRED     'NWE0001';
+dcl-c NWE_DUPLICATE    'NWE0002';
+dcl-c NWE_NOTFOUND     'NWE0003';
+dcl-c NWE_RANGE        'NWE0004';
+dcl-c NWE_REFERENCE    'NWE0005';
+dcl-c NWE_INVALID      'NWE0006';
+dcl-c NWE_SQL          'NWE9999';

@@ -1,0 +1,137 @@
+     A* ======================================================================
+     A* WRKCDMD - Work with Customer Demographic Links (display file for WRKCDM)
+     A* Records: SFL01/CTL01/FKEYS01 list, DETAIL, SFL02/CTL02/FKEYS02 delete
+     A* ======================================================================
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A                                      PRINT
+     A                                      CA03(03 'Exit')
+     A                                      CA12(12 'Cancel')
+     A* List subfile
+     A          R SFL01                     SFL
+     A            S1OPT          1A  B  9  3VALUES(' ' '3' '4' '5')
+     A            S1CUSTID       5A  O  9  7
+     A            S1NCUSTID     28A  O  9 14
+     A            S1TYPEID      10A  O  9 44
+     A            S1NTYPEID     20A  O  9 56
+     A            H1CUSTID       5A  H
+     A            H1TYPEID      10A  H
+     A* List control
+     A          R CTL01                     SFLCTL(SFL01)
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      CF05(05 'Refresh')
+     A                                      CF06(06 'Create')
+     A                                      OVERLAY
+     A  31                                  SFLDSP
+     A  32                                  SFLDSPCTL
+     A  33                                  SFLCLR
+     A  34                                  SFLEND(*MORE)
+     A            C1RRN          4S 0H      SFLRCDNBR(CURSOR)
+     A                                  1  2'WRKCDM'
+     A                                  1 22'Work with Customer Demographic'
+     A                                      DSPATR(HI)
+     A                                  1 53'Links'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Position to customer . .'
+     A            C1POS          5A  B  3 27
+     A                                  5  2'Type options, press Enter.'
+     A                                      COLOR(BLU)
+     A                                  6  4'3=Copy   4=Delete   5=Display'
+     A                                      COLOR(BLU)
+     A                                  8  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  8  7'Cust'
+     A                                      DSPATR(HI)
+     A                                  8 14'Company'
+     A                                      DSPATR(HI)
+     A                                  8 44'Type'
+     A                                      DSPATR(HI)
+     A                                  8 56'Description'
+     A                                      DSPATR(HI)
+     A* List function keys and message line
+     A          R FKEYS01
+     A                                      OVERLAY
+     A                                 23  2'F3=Exit   F5=Refresh   F6=Create'
+     A                                      COLOR(BLU)
+     A                                 23 37'F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MSG1          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Detail panel: create / change / copy / display
+     A          R DETAIL
+     A                                  1  2'WRKCDM'
+     A            PTITLE        40A  O  1 21
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A            PINSTR        60A  O  3  2
+     A                                      COLOR(BLU)
+     A                                  5  2'Customer . . . .'
+     A            DCUSTID        5A  B  5 20
+     A  41                                  DSPATR(PR)
+     A  51                                  DSPATR(RI PC)
+     A            NCUSTID       40A  O  5 27
+     A                                  6  2'Customer type  .'
+     A            DTYPEID       10A  B  6 20
+     A  41                                  DSPATR(PR)
+     A  52                                  DSPATR(RI PC)
+     A            NTYPEID       40A  O  6 32
+     A            PKEYS         78A  O 23  2
+     A                                      COLOR(BLU)
+     A            PMSG          78A  O 24  2
+     A                                      DSPATR(HI)
+     A* Confirm delete subfile
+     A          R SFL02                     SFL
+     A            X2OPT          1A  O  8  3
+     A            X2CUSTID       5A  O  8  7
+     A            X2NCUSTID     28A  O  8 14
+     A            X2TYPEID      10A  O  8 44
+     A            X2NTYPEID     20A  O  8 56
+     A          R CTL02                     SFLCTL(SFL02)
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      OVERLAY
+     A  35                                  SFLDSP
+     A  36                                  SFLDSPCTL
+     A  37                                  SFLCLR
+     A  38                                  SFLEND(*MORE)
+     A                                  1  2'WRKCDM'
+     A                                  1 18'Confirm Delete of Customer'
+     A                                      DSPATR(HI)
+     A                                  1 45'Demographic Links'
+     A                                      DSPATR(HI)
+     A                                  1 71DATE
+     A                                      EDTCDE(Y)
+     A                                  2  2USER
+     A                                  2 71TIME
+     A                                  3  2'Press Enter to confirm your'
+     A                                      COLOR(BLU)
+     A                                  3 30'choices for 4=Delete.'
+     A                                      COLOR(BLU)
+     A                                  4  2'Press F12=Cancel to return to'
+     A                                      COLOR(BLU)
+     A                                  4 32'change your choices.'
+     A                                      COLOR(BLU)
+     A                                  7  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  7  7'Cust'
+     A                                      DSPATR(HI)
+     A                                  7 14'Company'
+     A                                      DSPATR(HI)
+     A                                  7 44'Type'
+     A                                      DSPATR(HI)
+     A                                  7 56'Description'
+     A                                      DSPATR(HI)
+     A          R FKEYS02
+     A                                      OVERLAY
+     A                                 23  2'F12=Cancel'
+     A                                      COLOR(BLU)
+     A            MSG2          78A  O 24  2
+     A                                      DSPATR(HI)
